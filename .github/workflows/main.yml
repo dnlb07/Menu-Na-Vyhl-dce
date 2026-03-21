@@ -1,0 +1,29 @@
+name: Update Menu Every Hour
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Spustí se každou hodinu (v celou)
+  workflow_dispatch:      # Umožní ti to spustit ručně tlačítkem
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Run update script
+        run: python update_menu.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add index.html
+          git commit -m "Automatická aktualizace menu" || exit 0
+          git push
