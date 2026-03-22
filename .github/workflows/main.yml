@@ -1,19 +1,24 @@
-name: Update Menu Every Hour
+name: Update Menu and Deploy to Pages
 
 on:
   schedule:
-    # Tato řádka říká: "Spusť se každou nultou minutu každé třetí hodiny"
-    - cron: '0 */3 * * *'
+    - cron: '0 */3 * * *' # Každé 3 hodiny
+  workflow_dispatch:      # Umožní ti to spustit i ručně tlačítkem
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -22,8 +27,20 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          git add index.html
-          git commit -m "Automatická aktualizace menu" || exit 0
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Automatická aktualizace menu" || echo "Žádné změny"
           git push
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Nahraje všechny soubory (včetně tvého index.html)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
