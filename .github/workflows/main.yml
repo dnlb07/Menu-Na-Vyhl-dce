@@ -2,8 +2,8 @@ name: Update Menu Every Hour
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Spustí se každou hodinu (v celou)
-  workflow_dispatch:      # Umožní ti to spustit ručně tlačítkem
+    # Tato řádka říká: "Spusť se každou nultou minutu každé třetí hodiny"
+    - cron: '0 */3 * * *'
 
 jobs:
   build:
